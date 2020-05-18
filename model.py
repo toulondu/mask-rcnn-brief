@@ -7,10 +7,11 @@ import utils
 from engine import train_one_epoch, evaluate
 from PIL import Image,ImageDraw
 import matplotlib.pyplot as plt
+from torch.utils.data import DataLoader,Dataset
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 
-class PennFudanDataset(object):
+class PennFudanDataset(Dataset):
     def __init__(self, root, transforms):
         self.root = root
         self.transforms = transforms
@@ -99,7 +100,7 @@ def get_model_instance_segmentation(num_classes):
 
     return model
 
-
+# 训练阶段按0.5几率水平翻转图像
 def get_transform(train):
     transforms = []
     transforms.append(T.ToTensor())
@@ -166,7 +167,7 @@ def train():
             torch.save(model.state_dict(),'./best_state_dict')
             best_mAp = mAp_epoch
 
-    print("That's it!")
+    print("Finish training the model.")
 
 
 if __name__ == '__main__':
@@ -188,7 +189,7 @@ if __name__ == '__main__':
     
     
     for [x1,y1,x2,y2] in prediction[0]['boxes']:
-        draw.rectangle([(x1,y1),(x2,y2)],outline=(255,0,0))
+        draw.rectangle([(x1,y1),(x2,y2)],outline=(255,0,0),width=2)
 
     imgs = [img_ori,masks_all]
 
